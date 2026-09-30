@@ -4,25 +4,27 @@ A full-stack task management application built with Next.js, TypeScript, React, 
 
 ## Features
 
-- User registration
-- User login and logout
-- Firebase Authentication
-- User-specific tasks
-- Create tasks
-- Delete tasks
-- Persistent task storage with Firestore
-- Protected tasks page
-- Responsive dark UI
-- Bootstrap styling
+* User registration
+* User login and logout
+* Firebase Authentication
+* User-specific tasks
+* Create tasks
+* Read and display tasks
+* Edit tasks
+* Delete tasks
+* Persistent task storage with Firestore
+* Protected tasks page
+* Responsive dark UI
+* Bootstrap styling
 
 ## Tech Stack
 
-- Next.js
-- React
-- TypeScript
-- Firebase Authentication
-- Firebase Firestore
-- Bootstrap
+* Next.js
+* React
+* TypeScript
+* Firebase Authentication
+* Firebase Firestore
+* Bootstrap
 
 ## Project Structure
 
@@ -62,24 +64,54 @@ users/
             └── description
 ```
 
+## CRUD Operations
+
+The application currently supports the complete CRUD cycle for tasks:
+
+* **Create** — users can create new tasks
+* **Read** — tasks are loaded from Firestore
+* **Update** — users can edit existing tasks
+* **Delete** — users can delete tasks
+
 ## Current Architecture
 
 The application separates responsibilities between:
 
-- **Pages** — application screens and page-level logic
-- **Components** — reusable UI components
-- **Hooks** — application logic and Firebase operations
-- **lib** — Firebase configuration
+* **Pages** — application screens and page-level logic
+* **Components** — reusable UI components
+* **Hooks** — application logic and Firebase operations
+* **lib** — Firebase configuration
 
 ## Future Improvements
 
-- Edit tasks
-- Task completion status
-- Better loading states
-- Form validation
-- Improved Firestore security rules
-- Better error handling
-- Task filtering and searching
+* Task completion status
+* Better loading states
+* Form validation
+* Improved error handling
+* Improved Firestore security rules
+* Task filtering and searching
+* Task priorities
+* Due dates
+* Task categories
+* Better UI/UX
+* User profile management
+
+## Security Testing
+
+After the application is completed and deployed, the project will be used as a legal personal web security testing environment.
+
+Planned testing areas include:
+
+* Authentication security
+* Authorization and access control
+* Firestore security rules
+* Input validation
+* XSS
+* API and request handling
+* Session and cookie security
+* Information disclosure
+* Security headers
+* Business logic vulnerabilities
 
 ## Author
 

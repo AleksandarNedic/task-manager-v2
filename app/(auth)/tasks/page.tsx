@@ -170,6 +170,7 @@ export default function TasksPage() {
                                 </div>
 
                                 <button
+                                   
                                     type="submit"
                                     className="btn btn-lg w-100 fw-bold"
                                     style={{
@@ -248,31 +249,34 @@ export default function TasksPage() {
                                                         {item.description}
                                                     </p>
                                                 </div>
-                                                <button
-                                                    onClick={() => {
-                                                        setEditingId(item.id);
-                                                        setTask(item.task);
-                                                        setDescription(item.description);
-                                                    }}
-                                                    type="button"
-                                                >
-                                                    Edit
-                                                </button>
+                                                <div className="d-flex gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditingId(item.id);
+                                                            setTask(item.task);
+                                                            setDescription(item.description);
+                                                        }}
+                                                        type="button"
+                                                        className="btn btn-sm btn-outline-success"
+                                                    >
+                                                        Edit
+                                                    </button>
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        deleteTask(item.id)
-                                                    }
-                                                    className="btn btn-sm"
-                                                    style={{
-                                                        color: "#ff6b6b",
-                                                        border: "1px solid #3a2529",
-                                                        background: "#1b1316",
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            deleteTask(item.id)
+                                                        }
+                                                        className="btn btn-sm"
+                                                        style={{
+                                                            color: "#ff6b6b",
+                                                            border: "1px solid #3a2529",
+                                                            background: "#1b1316",
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
