@@ -2,18 +2,19 @@
 "use client";
 
 
-import { useEffect} from "react";
+
 import useTask from "../../../hooks/useTask";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import useAuthGuard from '../../../hooks/useAuthGuard'
 import {useRouter} from "next/navigation";
-
+import { useEffect, useState } from "react";
 
 
 export default function TasksPage() {
     const router = useRouter();
     const {user, loading} = useAuthGuard()
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const {
         setTask,
@@ -23,6 +24,7 @@ export default function TasksPage() {
         task,
         description,
         deleteTask,
+        editTask,
         getTasks,
     } = useTask();
 
@@ -33,7 +35,22 @@ export default function TasksPage() {
         });
     }, [user]);
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
+        if (editingId) {
+            await editTask(editingId, task, description);
+
+            setEditingId(null);
+            setTask("");
+            setDescription("");
+
+            await getTasks();
+            return;
+        }
+
+        await addTask(e);
+    };
 
     const handleLogout = async () => {
         await signOut(auth)
@@ -99,7 +116,7 @@ export default function TasksPage() {
                                 Add a new task
                             </h2>
 
-                            <form onSubmit={addTask}>
+                            <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
                                     <label
                                         htmlFor="task"
@@ -161,7 +178,7 @@ export default function TasksPage() {
                                         color: "#0b0f14",
                                     }}
                                 >
-                                    + Add Task
+                                    {editingId ? "Save Changes" : "+ Add Task"}
                                 </button>
                             </form>
                         </div>
@@ -231,6 +248,16 @@ export default function TasksPage() {
                                                         {item.description}
                                                     </p>
                                                 </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingId(item.id);
+                                                        setTask(item.task);
+                                                        setDescription(item.description);
+                                                    }}
+                                                    type="button"
+                                                >
+                                                    Edit
+                                                </button>
 
                                                 <button
                                                     type="button"

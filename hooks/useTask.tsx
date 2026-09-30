@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { auth, db } from "@/lib/firebase";
-import { addDoc, collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 type Task = {
     id: string;
@@ -12,6 +12,24 @@ export default function useTask() {
     const [task, setTask] = useState("");
     const [description, setDescription] = useState("");
     const [tasks, setTasks] = useState<Task[]>([]);
+
+    const editTask = async (
+        id: string,
+        task: string,
+        description: string
+
+    ) => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const taskRef = doc(db, "users", user.uid, "tasks", id);
+
+        await updateDoc(taskRef, {
+            task: task,
+            description: description,
+        });
+
+    }
 
     const deleteTask = async (id: string) => {
         const user = auth.currentUser;
@@ -93,5 +111,6 @@ export default function useTask() {
         addTask,
         deleteTask,
         getTasks,
+        editTask,
     };
 }
