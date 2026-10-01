@@ -27,6 +27,8 @@ export default function TasksPage() {
         deleteTask,
         editTask,
         getTasks,
+        error,
+        setError,
     } = useTask();
 
     useEffect(() => {
@@ -38,6 +40,13 @@ export default function TasksPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!task.trim()) {
+            setError("Task is required.");
+            return;
+        }
+
+        setError("");
 
         setSaving(true);
 
@@ -173,7 +182,19 @@ export default function TasksPage() {
                                         }}
                                     />
                                 </div>
-
+                                {error && (
+                                    <div
+                                        className="mb-4 px-3 py-2 rounded-3"
+                                        style={{
+                                            background: "#1a222c",
+                                            border: "1px solid #344150",
+                                            color: "#ff6b6b",
+                                            fontSize: "0.9rem",
+                                        }}
+                                    >
+                                        {error}
+                                    </div>
+                                )}
                                 <button
                                    disabled={saving}
                                     type="submit"
@@ -257,6 +278,7 @@ export default function TasksPage() {
                                                 <div className="d-flex gap-2">
                                                     <button
                                                         onClick={() => {
+                                                            setError("")
                                                             setEditingId(item.id);
                                                             setTask(item.task);
                                                             setDescription(item.description);
@@ -271,6 +293,7 @@ export default function TasksPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => {
+                                                                setError("")
                                                                 setEditingId(null);
                                                                 setTask("");
                                                                 setDescription("");

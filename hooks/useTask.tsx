@@ -12,13 +12,15 @@ export default function useTask() {
     const [task, setTask] = useState("");
     const [description, setDescription] = useState("");
     const [tasks, setTasks] = useState<Task[]>([]);
-
+    const [error, setError] = useState('')
     const editTask = async (
         id: string,
         task: string,
         description: string
 
     ) => {
+
+        
         const user = auth.currentUser;
         if (!user) return;
 
@@ -57,6 +59,14 @@ export default function useTask() {
         const user = auth.currentUser;
 
         if (!user) return;
+
+        if (!task.trim()) {
+            setError("Please enter a task title.");
+            return;
+        }
+
+
+         setError("")
 
         const tasksCollection = collection(
             db,
@@ -114,6 +124,8 @@ export default function useTask() {
         deleteTask,
         getTasks,
         editTask,
+        error,
+        setError,
        
     };
 }
