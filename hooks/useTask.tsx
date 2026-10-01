@@ -31,6 +31,8 @@ export default function useTask() {
 
     }
 
+
+
     const deleteTask = async (id: string) => {
         const user = auth.currentUser;
 
@@ -112,5 +114,6 @@ export default function useTask() {
         deleteTask,
         getTasks,
         editTask,
+       
     };
 }

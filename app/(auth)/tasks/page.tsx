@@ -262,7 +262,25 @@ export default function TasksPage() {
                                                         Edit
                                                     </button>
 
-                                                    <button
+                                                    {editingId ? (<button
+                                                        type="button"
+                                                        onClick={() =>
+                                                        {
+                                                            setEditingId(null);
+                                                            setTask("");
+                                                            setDescription("");
+                                                        }
+
+                                                        }
+                                                        className="btn btn-sm btn-outline-success"
+                                                        style={{
+                                                            color: "#ff6b6b",
+                                                            border: "1px solid #3a2529",
+                                                            background: "#1b1316",
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </button>) : (<button
                                                         type="button"
                                                         onClick={() =>
                                                             deleteTask(item.id)
@@ -275,7 +293,7 @@ export default function TasksPage() {
                                                         }}
                                                     >
                                                         Delete
-                                                    </button>
+                                                    </button>) }
                                                 </div>
                                             </div>
                                         </div>
