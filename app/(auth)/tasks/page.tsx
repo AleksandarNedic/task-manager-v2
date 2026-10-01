@@ -15,6 +15,7 @@ export default function TasksPage() {
     const router = useRouter();
     const {user, loading} = useAuthGuard()
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
 
     const {
         setTask,
@@ -38,6 +39,8 @@ export default function TasksPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        setSaving(true);
+
         if (editingId) {
             await editTask(editingId, task, description);
 
@@ -46,10 +49,12 @@ export default function TasksPage() {
             setDescription("");
 
             await getTasks();
+            setSaving(false);
             return;
         }
 
         await addTask(e);
+        setSaving(false);
     };
 
     const handleLogout = async () => {
@@ -170,7 +175,7 @@ export default function TasksPage() {
                                 </div>
 
                                 <button
-                                   
+                                   disabled={saving}
                                     type="submit"
                                     className="btn btn-lg w-100 fw-bold"
                                     style={{
@@ -179,7 +184,7 @@ export default function TasksPage() {
                                         color: "#0b0f14",
                                     }}
                                 >
-                                    {editingId ? "Save Changes" : "+ Add Task"}
+                                    {saving ? "Saving..." : editingId ? "Save Changes" : "+ Add Task"}
                                 </button>
                             </form>
                         </div>
@@ -262,38 +267,29 @@ export default function TasksPage() {
                                                         Edit
                                                     </button>
 
-                                                    {editingId ? (<button
-                                                        type="button"
-                                                        onClick={() =>
-                                                        {
-                                                            setEditingId(null);
-                                                            setTask("");
-                                                            setDescription("");
-                                                        }
-
-                                                        }
-                                                        className="btn btn-sm btn-outline-success"
-                                                        style={{
-                                                            color: "#ff6b6b",
-                                                            border: "1px solid #3a2529",
-                                                            background: "#1b1316",
-                                                        }}
-                                                    >
-                                                        Cancel
-                                                    </button>) : (<button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            deleteTask(item.id)
-                                                        }
-                                                        className="btn btn-sm"
-                                                        style={{
-                                                            color: "#ff6b6b",
-                                                            border: "1px solid #3a2529",
-                                                            background: "#1b1316",
-                                                        }}
-                                                    >
-                                                        Delete
-                                                    </button>) }
+                                                    {editingId ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setEditingId(null);
+                                                                setTask("");
+                                                                setDescription("");
+                                                            }}
+                                                            className="btn btn-sm btn-outline-danger"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                deleteTask(item.id)
+                                                            }
+                                                            className="btn btn-sm btn-outline-danger"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
