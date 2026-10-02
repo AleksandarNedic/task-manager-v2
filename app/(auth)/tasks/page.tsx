@@ -1,19 +1,15 @@
-
 "use client";
-
-
 
 import useTask from "../../../hooks/useTask";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import useAuthGuard from '../../../hooks/useAuthGuard'
-import {useRouter} from "next/navigation";
+import useAuthGuard from "../../../hooks/useAuthGuard";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 
 export default function TasksPage() {
     const router = useRouter();
-    const {user, loading} = useAuthGuard()
+    const {user, loading} = useAuthGuard();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
 
@@ -33,9 +29,8 @@ export default function TasksPage() {
 
     useEffect(() => {
         if (!user) return;
-        getTasks().catch((error) => {
-            console.error("Failed to load tasks:", error);
-        });
+
+        getTasks();
     }, [user]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +46,16 @@ export default function TasksPage() {
         setSaving(true);
 
         if (editingId) {
-            await editTask(editingId, task, description);
+            const success = await editTask(
+                editingId,
+                task,
+                description
+            );
+
+            if (!success) {
+                setSaving(false);
+                return;
+            }
 
             setEditingId(null);
             setTask("");
@@ -67,10 +71,9 @@ export default function TasksPage() {
     };
 
     const handleLogout = async () => {
-        await signOut(auth)
-        router.push("/login")
-
-    }
+        await signOut(auth);
+        router.push("/login");
+    };
 
     if (loading) {
         return null;
@@ -89,31 +92,29 @@ export default function TasksPage() {
                 <div className="d-flex justify-content-between align-items-center mb-5">
                     <div>
                         <h1 className="fw-bold mb-1">
-                            Task<span style={{ color: "#c7f000" }}>.</span>
+                            Task<span style={{color: "#c7f000"}}>.</span>
                         </h1>
 
                         <p
                             className="mb-0"
-                            style={{ color: "#8793a1" }}
+                            style={{color: "#8793a1"}}
                         >
                             Manage your tasks and stay productive.
                         </p>
                     </div>
 
-
-                        <button
-                            onClick={handleLogout}
-                            type="button"
-                            className="btn fw-semibold"
-                            style={{
-                                background: "#1a222c",
-                                color: "#f5f7fa",
-                                border: "1px solid #344150",
-                            }}
-                        >
-                            Logout
-                        </button>
-
+                    <button
+                        onClick={handleLogout}
+                        type="button"
+                        className="btn fw-semibold"
+                        style={{
+                            background: "#1a222c",
+                            color: "#f5f7fa",
+                            border: "1px solid #344150",
+                        }}
+                    >
+                        Logout
+                    </button>
                 </div>
 
                 <div className="row g-4">
@@ -135,7 +136,7 @@ export default function TasksPage() {
                                     <label
                                         htmlFor="task"
                                         className="form-label fw-semibold"
-                                        style={{ color: "#dce2e8" }}
+                                        style={{color: "#dce2e8"}}
                                     >
                                         Task
                                     </label>
@@ -161,7 +162,7 @@ export default function TasksPage() {
                                     <label
                                         htmlFor="description"
                                         className="form-label fw-semibold"
-                                        style={{ color: "#dce2e8" }}
+                                        style={{color: "#dce2e8"}}
                                     >
                                         Description
                                     </label>
@@ -182,6 +183,7 @@ export default function TasksPage() {
                                         }}
                                     />
                                 </div>
+
                                 {error && (
                                     <div
                                         className="mb-4 px-3 py-2 rounded-3"
@@ -195,8 +197,9 @@ export default function TasksPage() {
                                         {error}
                                     </div>
                                 )}
+
                                 <button
-                                   disabled={saving}
+                                    disabled={saving}
                                     type="submit"
                                     className="btn btn-lg w-100 fw-bold"
                                     style={{
@@ -205,7 +208,11 @@ export default function TasksPage() {
                                         color: "#0b0f14",
                                     }}
                                 >
-                                    {saving ? "Saving..." : editingId ? "Save Changes" : "+ Add Task"}
+                                    {saving
+                                        ? "Saving..."
+                                        : editingId
+                                            ? "Save Changes"
+                                            : "+ Add Task"}
                                 </button>
                             </form>
                         </div>
@@ -239,7 +246,7 @@ export default function TasksPage() {
                             {tasks.length === 0 ? (
                                 <div
                                     className="text-center py-5"
-                                    style={{ color: "#687585" }}
+                                    style={{color: "#687585"}}
                                 >
                                     <p className="mb-1">
                                         No tasks yet.
@@ -275,13 +282,16 @@ export default function TasksPage() {
                                                         {item.description}
                                                     </p>
                                                 </div>
+
                                                 <div className="d-flex gap-2">
                                                     <button
                                                         onClick={() => {
-                                                            setError("")
+                                                            setError("");
                                                             setEditingId(item.id);
                                                             setTask(item.task);
-                                                            setDescription(item.description);
+                                                            setDescription(
+                                                                item.description
+                                                            );
                                                         }}
                                                         type="button"
                                                         className="btn btn-sm btn-outline-success"
@@ -293,7 +303,7 @@ export default function TasksPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => {
-                                                                setError("")
+                                                                setError("");
                                                                 setEditingId(null);
                                                                 setTask("");
                                                                 setDescription("");
@@ -306,7 +316,9 @@ export default function TasksPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() =>
-                                                                deleteTask(item.id)
+                                                                deleteTask(
+                                                                    item.id
+                                                                )
                                                             }
                                                             className="btn btn-sm btn-outline-danger"
                                                         >
@@ -325,4 +337,5 @@ export default function TasksPage() {
             </div>
         </main>
     );
+
 }

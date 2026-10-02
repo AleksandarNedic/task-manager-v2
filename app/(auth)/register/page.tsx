@@ -1,18 +1,26 @@
+
 "use client";
 
 import { useState } from "react";
 import useRegister from "@/hooks/useRegister";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
     const { register, error } = useRegister();
+    const router = useRouter();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [success, setSuccess] = useState(false);
 
     const handleRegister = async (e: any) => {
         e.preventDefault();
 
-        await register(email, password);
+        const result = await register(email, password);
+
+        if (result) {
+            setSuccess(true);
+        }
     };
 
     return (
@@ -63,75 +71,124 @@ export default function RegisterPage() {
                                 </p>
                             </div>
 
-                            <form onSubmit={handleRegister}>
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor="email"
-                                        className="form-label fw-semibold"
-                                        style={{ color: "#dce2e8" }}
-                                    >
-                                        Email
-                                    </label>
-
-                                    <input
-                                        onChange={(e) =>
-                                            setEmail(e.target.value)
-                                        }
-                                        id="email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        className="form-control form-control-lg"
+                            {success ? (
+                                <div className="text-center">
+                                    <div
+                                        className="mb-4 px-3 py-3 rounded-3"
                                         style={{
-                                            background: "#0b0f14",
-                                            border: "1px solid #344150",
-                                            color: "#ffffff",
+                                            background: "#162000",
+                                            border: "1px solid #c7f000",
+                                            color: "#c7f000",
                                         }}
-                                    />
-                                </div>
-
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor="password"
-                                        className="form-label fw-semibold"
-                                        style={{ color: "#dce2e8" }}
                                     >
-                                        Password
-                                    </label>
-
-                                    <input
-                                        onChange={(e) =>
-                                            setPassword(e.target.value)
-                                        }
-                                        id="password"
-                                        type="password"
-                                        placeholder="Create a password"
-                                        className="form-control form-control-lg"
-                                        style={{
-                                            background: "#0b0f14",
-                                            border: "1px solid #344150",
-                                            color: "#ffffff",
-                                        }}
-                                    />
-                                </div>
-
-                                {error && (
-                                    <div className="alert alert-danger py-2">
-                                        {error}
+                                        Account created successfully. You can
+                                        now log in.
                                     </div>
-                                )}
 
-                                <button
-                                    type="submit"
-                                    className="btn btn-lg w-100 fw-bold mt-2"
-                                    style={{
-                                        background: "#c7f000",
-                                        border: "none",
-                                        color: "#0b0f14",
-                                    }}
-                                >
-                                    Create account →
-                                </button>
-                            </form>
+                                    <button
+                                        type="button"
+                                        onClick={() => router.push("/login")}
+                                        className="btn btn-lg w-100 fw-bold"
+                                        style={{
+                                            background: "#c7f000",
+                                            border: "none",
+                                            color: "#0b0f14",
+                                        }}
+                                    >
+                                        Go to login →
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <form onSubmit={handleRegister}>
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="email"
+                                                className="form-label fw-semibold"
+                                                style={{ color: "#dce2e8" }}
+                                            >
+                                                Email
+                                            </label>
+
+                                            <input
+                                                onChange={(e) =>
+                                                    setEmail(e.target.value)
+                                                }
+                                                id="email"
+                                                type="email"
+                                                placeholder="you@example.com"
+                                                className="form-control form-control-lg"
+                                                style={{
+                                                    background: "#0b0f14",
+                                                    border: "1px solid #344150",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="password"
+                                                className="form-label fw-semibold"
+                                                style={{ color: "#dce2e8" }}
+                                            >
+                                                Password
+                                            </label>
+
+                                            <input
+                                                onChange={(e) =>
+                                                    setPassword(e.target.value)
+                                                }
+                                                id="password"
+                                                type="password"
+                                                placeholder="Create a password"
+                                                className="form-control form-control-lg"
+                                                style={{
+                                                    background: "#0b0f14",
+                                                    border: "1px solid #344150",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+                                        </div>
+
+                                        {error && (
+                                            <div className="alert alert-danger py-2">
+                                                {error}
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="submit"
+                                            className="btn btn-lg w-100 fw-bold mt-2"
+                                            style={{
+                                                background: "#c7f000",
+                                                border: "none",
+                                                color: "#0b0f14",
+                                            }}
+                                        >
+                                            Create account →
+                                        </button>
+                                    </form>
+
+                                    <div className="text-center mt-4">
+                                        <span style={{ color: "#687585" }}>
+                                            Already have an account?{" "}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => router.push("/login")}
+                                            className="btn btn-link p-0"
+                                            style={{
+                                                color: "#c7f000",
+                                                textDecoration: "none",
+                                            }}
+                                        >
+                                            Log in
+                                        </button>
+                                    </div>
+                                </>
+                            )}
 
                             <div className="text-center mt-4">
                                 <small style={{ color: "#687585" }}>
