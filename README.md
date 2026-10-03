@@ -21,8 +21,10 @@ The project is being developed as a practical full-stack learning project, with 
 * Form validation
 * Basic error messaging
 * Firebase error handling
+* Loading state while fetching tasks
 * Saving state during form submission
 * Registration success feedback
+* Delete confirmation modal
 * Responsive dark UI
 * Bootstrap styling
 
@@ -39,24 +41,37 @@ The project is being developed as a practical full-stack learning project, with 
 
 ```text
 app/
+
 ├── page.tsx
+
 ├── (auth)/
+
 │   ├── login/
+
 │   │   └── page.tsx
+
 │   └── register/
+
 │       └── page.tsx
+
 └── tasks/
+
     └── page.tsx
 
 components/
+
 └── TaskForm.tsx
 
 hooks/
+
 ├── useLogin.ts
+
 ├── useRegister.ts
+
 └── useTask.ts
 
 lib/
+
 └── firebase.ts
 ```
 
@@ -66,10 +81,15 @@ Each user's tasks are stored separately using their Firebase Authentication UID:
 
 ```text
 users/
+
 └── {userId}/
+
     └── tasks/
+
         └── {taskId}/
+
             ├── task
+
             └── description
 ```
 
@@ -102,8 +122,9 @@ Task is required.
 
 Registration also includes basic validation:
 
-* Email must contain `@`
-* Password must contain at least 6 characters
+* Email format is validated
+* Password length is validated
+* Password confirmation is validated
 
 ## Error Handling
 
@@ -122,29 +143,48 @@ Examples:
 
 ```text
 Failed to add task. Please try again.
+
 Failed to load tasks. Please try again.
+
 Failed to update task. Please try again.
+
 Failed to delete task. Please try again.
 ```
+
+Firebase-specific registration errors are also handled, including:
+
+* Email already in use
+* Invalid email
+* Weak password
+* Network errors
+* Too many requests
+* Firebase configuration issues
 
 Further improvements are planned for more detailed Firebase-specific error handling.
 
 ## Loading States
 
-The application currently includes a saving state for task creation and editing.
+The application currently includes loading and saving states.
 
-Current behavior:
+### Task Loading
 
-* Submit button becomes disabled while saving
+While tasks are being retrieved from Firestore:
+
+```text
+Loading tasks...
+```
+
+is displayed instead of the task list.
+
+### Saving State
+
+During task creation or editing:
+
+* Submit button becomes disabled
 * Button text changes to `Saving...`
 * Duplicate submissions are prevented while the operation is in progress
 
-Planned improvements:
-
-* Task loading state
-* Delete loading state
-* Authentication loading states
-* Better visual feedback during Firebase operations
+Future improvements may include more detailed loading feedback for individual operations.
 
 ## Registration Feedback
 
@@ -161,3 +201,38 @@ The user can then select:
 ```text
 Go to login →
 ```
+
+## Delete Confirmation
+
+Deleting a task now requires user confirmation.
+
+When the user selects **Delete**, a custom confirmation modal is displayed:
+
+```text
+Delete task?
+
+Are you sure you want to delete this task?
+
+[ No ] [ Yes, delete ]
+```
+
+The modal uses the application's existing dark UI design and is displayed in the center of the screen.
+
+The selected task ID is temporarily stored so the correct task can be deleted after confirmation.
+
+## Future Improvements
+
+Planned improvements include:
+
+* Refactor `TasksPage` into smaller reusable components
+* Extract task list into a dedicated `TaskList` component
+* Extract individual tasks into a `TaskItem` component
+* Extract the delete confirmation into a reusable `DeleteConfirmation` component
+* Improve Firebase-specific error handling
+* Add stronger Firestore Security Rules
+* Improve authentication security
+* Add additional form validation
+* Improve loading and error feedback
+* Deploy the application
+* Perform authorized security testing on the deployed application
+* Test for common web security issues such as broken access control, XSS, authentication issues, and information disclosure
