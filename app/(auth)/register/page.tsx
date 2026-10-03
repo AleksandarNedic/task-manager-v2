@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { useForm } from "react-hook-form";
 
 import useRegister from "@/hooks/useRegister";
@@ -21,9 +23,13 @@ const inputStyle = {
 const labelStyle = { color: "#dce2e8" };
 
 export default function RegisterPage() {
+    
+    
     const { register, error } = useRegister();
 
     const router = useRouter();
+
+    const [success, setSuccess] = useState(false);
 
     const {
         register: registerField,
@@ -33,8 +39,20 @@ export default function RegisterPage() {
     } = useForm<RegisterForm>();
 
     const onSubmit = async (data: RegisterForm) => {
-        await register(data.email, data.password);
-    };
+  
+
+    const result = await register(
+        data.email,
+        data.password
+    );
+
+   
+
+    if (result === true) {
+       
+        setSuccess(true);
+    }
+};
 
     return (
         <main
@@ -70,7 +88,7 @@ export default function RegisterPage() {
                                     className="fw-bold mb-2"
                                     style={{ color: "#f5f7fa" }}
                                 >
-                                    Create account
+                                    Create Account
                                 </h1>
 
                                 <p
@@ -81,145 +99,204 @@ export default function RegisterPage() {
                                 </p>
                             </div>
 
-                            <form
-                                onSubmit={handleSubmit(onSubmit)}
-                                noValidate
-                            >
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor="email"
-                                        className="form-label fw-semibold"
-                                        style={labelStyle}
+                            {success ? (
+                               
+                                <div className="text-center">
+                                  
+                                    <div
+                                        className="mb-4 px-3 py-3 rounded-3"
+                                        style={{
+                                            background: "#162000",
+                                            border: "1px solid #c7f000",
+                                            color: "#c7f000",
+                                        }}
                                     >
-                                        Email
-                                    </label>
+                                        Account created successfully.
+                                        You can now log in.
+                                    </div>
 
-                                    <input
-                                        {...registerField("email", {
-                                            required: "Email is required",
-                                            pattern: {
-                                                value: /^\S+@\S+\.\S+$/,
-                                                message:
-                                                    "Please enter a valid email address",
-                                            },
-                                        })}
-                                        id="email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        className="form-control form-control-lg"
-                                        style={inputStyle}
-                                    />
-
-                                    {errors.email && (
-                                        <p className="text-danger mt-2 mb-0">
-                                            {errors.email.message}
-                                        </p>
-                                    )}
-
-                                    {!errors.email && error && (
-                                        <p className="text-danger mt-2 mb-0">
-                                            {error}
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor="password"
-                                        className="form-label fw-semibold"
-                                        style={labelStyle}
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            router.push("/login")
+                                        }
+                                        className="btn btn-lg w-100 fw-bold"
+                                        style={{
+                                            background: "#c7f000",
+                                            border: "none",
+                                            color: "#0b0f14",
+                                        }}
                                     >
-                                        Password
-                                    </label>
-
-                                    <input
-                                        {...registerField("password", {
-                                            required: "Password is required",
-                                            minLength: {
-                                                value: 8,
-                                                message:
-                                                    "Password must be at least 8 characters",
-                                            },
-                                        })}
-                                        id="password"
-                                        type="password"
-                                        placeholder="Create a password"
-                                        className="form-control form-control-lg"
-                                        style={inputStyle}
-                                    />
-
-                                    {errors.password && (
-                                        <p className="text-danger mt-2 mb-0">
-                                            {errors.password.message}
-                                        </p>
-                                    )}
+                                        Go to login →
+                                    </button>
                                 </div>
+                            ) : (
+                                <>
+                                   <form
+    onSubmit={handleSubmit(
+        onSubmit,
+        (errors) => console.log("FORM ERRORS:", errors)
+    )}
+    noValidate
+>
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="email"
+                                                className="form-label fw-semibold"
+                                                style={labelStyle}
+                                            >
+                                                Email
+                                            </label>
 
-                                <div className="mb-3">
-                                    <label
-                                        htmlFor="confirmPassword"
-                                        className="form-label fw-semibold"
-                                        style={labelStyle}
-                                    >
-                                        Confirm Password
-                                    </label>
+                                            <input
+                                                {...registerField("email", {
+                                                    required:
+                                                        "Email is required",
+                                                    pattern: {
+                                                        value: /^\S+@\S+\.\S+$/,
+                                                        message:
+                                                            "Please enter a valid email address",
+                                                    },
+                                                })}
+                                                id="email"
+                                                type="email"
+                                                placeholder="you@example.com"
+                                                className="form-control form-control-lg"
+                                                style={inputStyle}
+                                            />
 
-                                    <input
-                                        {...registerField("confirmPassword", {
-                                            required:
-                                                "Please confirm your password",
-                                            validate: (value) =>
-                                                value ===
-                                                    getValues("password") ||
-                                                "Passwords do not match",
-                                        })}
-                                        id="confirmPassword"
-                                        type="password"
-                                        placeholder="Confirm your password"
-                                        className="form-control form-control-lg"
-                                        style={inputStyle}
-                                    />
+                                            {errors.email && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {errors.email.message}
+                                                </p>
+                                            )}
 
-                                    {errors.confirmPassword && (
-                                        <p className="text-danger mt-2 mb-0">
-                                            {errors.confirmPassword.message}
-                                        </p>
-                                    )}
-                                </div>
+                                            {!errors.email && error && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {error}
+                                                </p>
+                                            )}
+                                        </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="btn btn-lg w-100 fw-bold mt-2"
-                                    style={{
-                                        background: "#c7f000",
-                                        border: "none",
-                                        color: "#0b0f14",
-                                    }}
-                                >
-                                    {isSubmitting
-                                        ? "Creating..."
-                                        : "Create account →"}
-                                </button>
-                            </form>
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="password"
+                                                className="form-label fw-semibold"
+                                                style={labelStyle}
+                                            >
+                                                Password
+                                            </label>
 
-                            <div className="text-center mt-4">
-                                <span style={{ color: "#687585" }}>
-                                    Already have an account?{" "}
-                                </span>
+                                            <input
+                                                {...registerField(
+                                                    "password",
+                                                    {
+                                                        required:
+                                                            "Password is required",
+                                                        minLength: {
+                                                            value: 8,
+                                                            message:
+                                                                "Password must be at least 8 characters",
+                                                        },
+                                                    }
+                                                )}
+                                                id="password"
+                                                type="password"
+                                                placeholder="Create a password"
+                                                className="form-control form-control-lg"
+                                                style={inputStyle}
+                                            />
 
-                                <button
-                                    type="button"
-                                    onClick={() => router.push("/login")}
-                                    className="btn btn-link p-0"
-                                    style={{
-                                        color: "#c7f000",
-                                        textDecoration: "none",
-                                    }}
-                                >
-                                    Log in
-                                </button>
-                            </div>
+                                            {errors.password && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {
+                                                        errors.password
+                                                            .message
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="confirmPassword"
+                                                className="form-label fw-semibold"
+                                                style={labelStyle}
+                                            >
+                                                Confirm Password
+                                            </label>
+
+                                            <input
+                                                {...registerField(
+                                                    "confirmPassword",
+                                                    {
+                                                        required:
+                                                            "Please confirm your password",
+                                                        validate: (value) =>
+                                                            value ===
+                                                                getValues(
+                                                                    "password"
+                                                                ) ||
+                                                            "Passwords do not match",
+                                                    }
+                                                )}
+                                                id="confirmPassword"
+                                                type="password"
+                                                placeholder="Confirm your password"
+                                                className="form-control form-control-lg"
+                                                style={inputStyle}
+                                            />
+
+                                            {errors.confirmPassword && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {
+                                                        errors
+                                                            .confirmPassword
+                                                            .message
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="btn btn-lg w-100 fw-bold mt-2"
+                                            style={{
+                                                background: "#c7f000",
+                                                border: "none",
+                                                color: "#0b0f14",
+                                            }}
+                                        >
+                                            {isSubmitting
+                                                ? "Creating..."
+                                                : "Create account →"}
+                                        </button>
+                                    </form>
+
+                                    <div className="text-center mt-4">
+                                        <span
+                                            style={{ color: "#687585" }}
+                                        >
+                                            Already have an account?{" "}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.push("/login")
+                                            }
+                                            className="btn btn-link p-0"
+                                            style={{
+                                                color: "#c7f000",
+                                                textDecoration: "none",
+                                            }}
+                                        >
+                                            Log in
+                                        </button>
+                                    </div>
+                                </>
+                            )}
 
                             <div className="text-center mt-4">
                                 <small style={{ color: "#687585" }}>
