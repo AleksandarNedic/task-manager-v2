@@ -15,7 +15,7 @@ export default function useLogin() {
             router.push('/tasks')
             console.log("Login successful");
         } catch (error) {
-            setError("Email ili password nisu ispravni.");
+            setError("Invalid email or password..");
         }
     };
 

@@ -2,21 +2,30 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import useRegister from "@/hooks/useRegister";
 import { useRouter } from "next/navigation";
 
-export default function RegisterPage() {
-    const { register, error } = useRegister();
-    const router = useRouter();
+type RegisterForm = {
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+export default function RegisterPage() {
+    const { register} = useRegister();
+    const router = useRouter();
+    const {
+        register: registerField,
+        handleSubmit,
+        getValues,
+        formState: { errors },
+    } = useForm<RegisterForm>();
+
     const [success, setSuccess] = useState(false);
 
-    const handleRegister = async (e: any) => {
-        e.preventDefault();
-
-        const result = await register(email, password);
+    const onSubmit = async (data: RegisterForm) => {
+        const result = await register(data.email, data.password);
 
         if (result) {
             setSuccess(true);
@@ -100,7 +109,7 @@ export default function RegisterPage() {
                                 </div>
                             ) : (
                                 <>
-                                    <form onSubmit={handleRegister}>
+                                    <form onSubmit={handleSubmit(onSubmit)}>
                                         <div className="mb-3">
                                             <label
                                                 htmlFor="email"
@@ -111,9 +120,13 @@ export default function RegisterPage() {
                                             </label>
 
                                             <input
-                                                onChange={(e) =>
-                                                    setEmail(e.target.value)
-                                                }
+                                                {...registerField("email", {
+                                                    required: "Email is required",
+                                                    pattern: {
+                                                        value: /^\S+@\S+\.\S+$/,
+                                                        message: "Please enter a valid email address",
+                                                    },
+                                                })}
                                                 id="email"
                                                 type="email"
                                                 placeholder="you@example.com"
@@ -124,6 +137,12 @@ export default function RegisterPage() {
                                                     color: "#ffffff",
                                                 }}
                                             />
+
+                                            {errors.email && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {errors.email.message}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="mb-3">
@@ -136,9 +155,13 @@ export default function RegisterPage() {
                                             </label>
 
                                             <input
-                                                onChange={(e) =>
-                                                    setPassword(e.target.value)
-                                                }
+                                                {...registerField("password", {
+                                                    required: "Password is required",
+                                                    minLength: {
+                                                        value: 8,
+                                                        message: "Password must be at least 8 characters",
+                                                    },
+                                                })}
                                                 id="password"
                                                 type="password"
                                                 placeholder="Create a password"
@@ -149,13 +172,47 @@ export default function RegisterPage() {
                                                     color: "#ffffff",
                                                 }}
                                             />
+
+                                            {errors.password && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {errors.password.message}
+                                                </p>
+                                            )}
                                         </div>
 
-                                        {error && (
-                                            <div className="alert alert-danger py-2">
-                                                {error}
-                                            </div>
-                                        )}
+                                        <div className="mb-3">
+                                            <label
+                                                htmlFor="confirmPassword"
+                                                className="form-label fw-semibold"
+                                                style={{ color: "#dce2e8" }}
+                                            >
+                                                Confirm Password
+                                            </label>
+
+                                            <input
+                                                {...registerField("confirmPassword", {
+                                                    required: "Please confirm your password",
+                                                    validate: (value) =>
+                                                        value === getValues("password") ||
+                                                        "Passwords do not match",
+                                                })}
+                                                id="confirmPassword"
+                                                type="password"
+                                                placeholder="Confirm your password"
+                                                className="form-control form-control-lg"
+                                                style={{
+                                                    background: "#0b0f14",
+                                                    border: "1px solid #344150",
+                                                    color: "#ffffff",
+                                                }}
+                                            />
+
+                                            {errors.confirmPassword && (
+                                                <p className="text-danger mt-2 mb-0">
+                                                    {errors.confirmPassword.message}
+                                                </p>
+                                            )}
+                                        </div>
 
                                         <button
                                             type="submit"
@@ -203,3 +260,4 @@ export default function RegisterPage() {
         </main>
     );
 }
+
