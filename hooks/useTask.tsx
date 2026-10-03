@@ -16,6 +16,7 @@ type Task = {
 };
 
 export default function useTask() {
+    const [loadingTasks, setLoadingTasks] = useState(false);
     const [task, setTask] = useState("");
     const [description, setDescription] = useState("");
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -118,6 +119,8 @@ export default function useTask() {
 
         if (!user) return;
 
+        setLoadingTasks(true);
+
         const tasksCollection = collection(
             db,
             "users",
@@ -138,6 +141,9 @@ export default function useTask() {
             console.error("Failed to load tasks:", error);
             setError("Failed to load tasks. Please try again.");
         }
+        finally {
+            setLoadingTasks(false);
+        }
     };
 
     return {
@@ -152,5 +158,7 @@ export default function useTask() {
         editTask,
         error,
         setError,
+        setLoadingTasks,
+        loadingTasks,
     };
 }
