@@ -1,4 +1,5 @@
 type TaskStatus = "pending" | "completed" | "in-progress";
+type TaskPriority = "low" | "medium" | "high";
 
 type TaskCardProps = {
   item: {
@@ -6,6 +7,7 @@ type TaskCardProps = {
     task: string;
     description: string;
     status: TaskStatus;
+    priority?: TaskPriority;
   };
   editingId: string | null;
   onEdit: (id: string) => void;
@@ -38,7 +40,28 @@ export default function TaskCard({
     },
   };
 
+  const priorityStyles = {
+    low: {
+      background: "#16351f",
+      color: "#4ade80",
+      text: "🟢 Low",
+    },
+    medium: {
+      background: "#3d3212",
+      color: "#f5c542",
+      text: "🟡 Medium",
+    },
+    high: {
+      background: "#3b1717",
+      color: "#ff6b6b",
+      text: "🔴 High",
+    },
+  };
+
   const currentStatus = statusStyles[item.status];
+  const currentPriority = item.priority
+    ? priorityStyles[item.priority]
+    : priorityStyles.medium;
 
   return (
     <div
@@ -63,16 +86,29 @@ export default function TaskCard({
             {item.description}
           </p>
 
-          <span
-            className="badge rounded-pill"
-            style={{
-              background: currentStatus.background,
-              color: currentStatus.color,
-              fontWeight: 600,
-            }}
-          >
-            {currentStatus.text}
-          </span>
+          <div className="d-flex flex-wrap gap-2">
+            <span
+              className="badge rounded-pill"
+              style={{
+                background: currentStatus.background,
+                color: currentStatus.color,
+                fontWeight: 600,
+              }}
+            >
+              {currentStatus.text}
+            </span>
+
+            <span
+              className="badge rounded-pill"
+              style={{
+                background: currentPriority.background,
+                color: currentPriority.color,
+                fontWeight: 600,
+              }}
+            >
+              {currentPriority.text}
+            </span>
+          </div>
         </div>
 
         <div className="d-flex gap-2">

@@ -1,4 +1,5 @@
 type TaskStatus = "pending" | "completed" | "in-progress";
+type TaskPriority = "low" | "medium" | "high";
 
 type TaskFormProps = {
   task: string;
@@ -7,6 +8,8 @@ type TaskFormProps = {
   setDescription: (value: string) => void;
   status: TaskStatus;
   setStatus: (value: TaskStatus) => void;
+  priority: TaskPriority;
+  setPriority: (value: TaskPriority) => void;
   error: string;
   saving: boolean;
   editingId: string | null;
@@ -20,6 +23,8 @@ export default function TaskForm({
   setDescription,
   status,
   setStatus,
+  priority,
+  setPriority,
   error,
   saving,
   editingId,
@@ -87,7 +92,7 @@ export default function TaskForm({
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             <label
               htmlFor="status"
               className="form-label fw-semibold"
@@ -110,6 +115,32 @@ export default function TaskForm({
               <option value="pending">🟡 Pending</option>
               <option value="in-progress">🔵 In Progress</option>
               <option value="completed">🟢 Completed</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="priority"
+              className="form-label fw-semibold"
+              style={{ color: "#dce2e8" }}
+            >
+              Priority
+            </label>
+
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
+              id="priority"
+              className="form-select form-select-lg"
+              style={{
+                background: "#0b0f14",
+                border: "1px solid #344150",
+                color: "#ffffff",
+              }}
+            >
+              <option value="low">🟢 Low</option>
+              <option value="medium">🟡 Medium</option>
+              <option value="high">🔴 High</option>
             </select>
           </div>
 

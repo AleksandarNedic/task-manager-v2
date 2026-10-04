@@ -12,6 +12,7 @@ import TaskForm from "../../components/TaskForm";
 import TaskHeader from "../../components/TaskHeader";
 
 type TaskStatus = "pending" | "completed" | "in-progress";
+type TaskPriority = "low" | "medium" | "high";
 
 export default function TasksPage() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function TasksPage() {
   const [saving, setSaving] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [status, setStatus] = useState<TaskStatus>("pending");
+  const [priority, setPriority] = useState<TaskPriority>("medium");
 
   const {
     setTask,
@@ -54,6 +56,7 @@ export default function TasksPage() {
     setTask(selectedTask.task);
     setDescription(selectedTask.description);
     setStatus(selectedTask.status);
+    setPriority(selectedTask.priority ?? "medium");
   };
 
   const handleCancelEdit = () => {
@@ -62,6 +65,7 @@ export default function TasksPage() {
     setTask("");
     setDescription("");
     setStatus("pending");
+    setPriority("medium");
   };
 
   const handleDelete = (id: string) => {
@@ -92,7 +96,13 @@ export default function TasksPage() {
     setSaving(true);
 
     if (editingId) {
-      const success = await editTask(editingId, task, description, status);
+      const success = await editTask(
+        editingId,
+        task,
+        description,
+        status,
+        priority,
+      );
 
       if (!success) {
         setSaving(false);
@@ -103,6 +113,7 @@ export default function TasksPage() {
       setTask("");
       setDescription("");
       setStatus("pending");
+      setPriority("medium");
 
       await getTasks();
       setSaving(false);
@@ -143,6 +154,8 @@ export default function TasksPage() {
             setDescription={setDescription}
             status={status}
             setStatus={setStatus}
+            priority={priority}
+            setPriority={setPriority}
             error={error}
             saving={saving}
             editingId={editingId}
