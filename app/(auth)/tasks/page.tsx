@@ -120,7 +120,7 @@ export default function TasksPage() {
       return;
     }
 
-    await addTask(e);
+    await addTask(e, priority);
     setSaving(false);
   };
 

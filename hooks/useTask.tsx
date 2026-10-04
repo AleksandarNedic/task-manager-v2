@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -14,6 +14,7 @@ type Task = {
   task: string;
   description: string;
   status: "pending" | "completed" | "in-progress";
+  priority: "low" | "medium" | "high";
 };
 
 const getFirebaseErrorMessage = (error: unknown, action: string) => {
@@ -49,6 +50,7 @@ export default function useTask() {
     task: string,
     description: string,
     status: "pending" | "completed" | "in-progress",
+    priority: "low" | "medium" | "high",
   ) => {
     const user = auth.currentUser;
 
@@ -76,6 +78,7 @@ export default function useTask() {
         task: task,
         description: description,
         status: status,
+        priority: priority,
       });
 
       return true;
@@ -104,7 +107,10 @@ export default function useTask() {
     }
   };
 
-  const addTask = async (e: any) => {
+  const addTask = async (
+    e: React.FormEvent<HTMLFormElement>,
+    priority: "low" | "medium" | "high",
+  ) => {
     e.preventDefault();
 
     const user = auth.currentUser;
@@ -135,6 +141,7 @@ export default function useTask() {
         task,
         description,
         status: "pending",
+        priority: priority,
       });
 
       const newTask: Task = {
@@ -142,6 +149,7 @@ export default function useTask() {
         task,
         description,
         status: "pending",
+        priority: priority,
       };
 
       setTasks([...tasks, newTask]);

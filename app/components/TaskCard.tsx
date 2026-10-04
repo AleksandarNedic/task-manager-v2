@@ -98,16 +98,18 @@ export default function TaskCard({
               {currentStatus.text}
             </span>
 
-            <span
-              className="badge rounded-pill"
-              style={{
-                background: currentPriority.background,
-                color: currentPriority.color,
-                fontWeight: 600,
-              }}
-            >
-              {currentPriority.text}
-            </span>
+            {item.status !== "completed" && (
+              <span
+                className="badge rounded-pill"
+                style={{
+                  background: currentPriority.background,
+                  color: currentPriority.color,
+                  fontWeight: 600,
+                }}
+              >
+                {currentPriority.text}
+              </span>
+            )}
           </div>
         </div>
 
