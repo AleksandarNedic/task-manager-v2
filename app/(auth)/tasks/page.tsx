@@ -6,6 +6,10 @@ import { auth } from "@/lib/firebase";
 import useAuthGuard from "../../../hooks/useAuthGuard";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ConfirmModal from "../../components/ConfirmModal";
+import TaskCard from "../../components/TaskCard";
+import TaskForm from "../../components/TaskForm";
+import TaskHeader from "../../components/TaskHeader";
 
 export default function TasksPage() {
   const router = useRouter();
@@ -36,6 +40,29 @@ export default function TasksPage() {
 
     getTasks();
   }, [user]);
+
+  const handleEdit = (id: string) => {
+    const selectedTask = tasks.find((item) => item.id === id);
+
+    if (!selectedTask) return;
+
+    setError("");
+    setEditingId(id);
+    setTask(selectedTask.task);
+    setDescription(selectedTask.description);
+  };
+
+  const handleCancelEdit = () => {
+    setError("");
+    setEditingId(null);
+    setTask("");
+    setDescription("");
+  };
+
+  const handleDelete = (id: string) => {
+    setTaskToDelete(id);
+    setShowConfirm(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,125 +116,20 @@ export default function TasksPage() {
     >
       <div className="container">
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-5">
-          <div>
-            <h1 className="fw-bold mb-1">
-              Task<span style={{ color: "#c7f000" }}>.</span>
-            </h1>
-
-            <p className="mb-0" style={{ color: "#8793a1" }}>
-              Manage your tasks and stay productive.
-            </p>
-          </div>
-
-          <button
-            onClick={handleLogout}
-            type="button"
-            className="btn fw-semibold"
-            style={{
-              background: "#1a222c",
-              color: "#f5f7fa",
-              border: "1px solid #344150",
-            }}
-          >
-            Logout
-          </button>
-        </div>
+        <TaskHeader handleLogout={handleLogout} />
 
         <div className="row g-4">
           {/* Add Task */}
-          <div className="col-12 col-lg-5">
-            <div
-              className="p-4 rounded-4 h-100"
-              style={{
-                background: "#121820",
-                border: "1px solid #26313d",
-              }}
-            >
-              <h2 className="h4 fw-bold mb-4">Add a new task</h2>
-
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label
-                    htmlFor="task"
-                    className="form-label fw-semibold"
-                    style={{ color: "#dce2e8" }}
-                  >
-                    Task
-                  </label>
-
-                  <input
-                    value={task}
-                    onChange={(e) => setTask(e.target.value)}
-                    id="task"
-                    type="text"
-                    placeholder="What needs to be done?"
-                    className="form-control form-control-lg"
-                    style={{
-                      background: "#0b0f14",
-                      border: "1px solid #344150",
-                      color: "#ffffff",
-                    }}
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="description"
-                    className="form-label fw-semibold"
-                    style={{ color: "#dce2e8" }}
-                  >
-                    Description
-                  </label>
-
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    id="description"
-                    placeholder="Add some details..."
-                    rows={5}
-                    className="form-control"
-                    style={{
-                      background: "#0b0f14",
-                      border: "1px solid #344150",
-                      color: "#ffffff",
-                    }}
-                  />
-                </div>
-
-                {error && (
-                  <div
-                    className="mb-4 px-3 py-2 rounded-3"
-                    style={{
-                      background: "#1a222c",
-                      border: "1px solid #344150",
-                      color: "#ff6b6b",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  disabled={saving}
-                  type="submit"
-                  className="btn btn-lg w-100 fw-bold"
-                  style={{
-                    background: "#c7f000",
-                    border: "none",
-                    color: "#0b0f14",
-                  }}
-                >
-                  {saving
-                    ? "Saving..."
-                    : editingId
-                      ? "Save Changes"
-                      : "+ Add Task"}
-                </button>
-              </form>
-            </div>
-          </div>
+          <TaskForm
+            task={task}
+            setTask={setTask}
+            description={description}
+            setDescription={setDescription}
+            error={error}
+            saving={saving}
+            editingId={editingId}
+            onSubmit={handleSubmit}
+          />
 
           {/* Tasks */}
           <div className="col-12 col-lg-7">
@@ -252,127 +174,31 @@ export default function TasksPage() {
                   ) : (
                     <div className="d-flex flex-column gap-3">
                       {tasks.map((item) => (
-                        <div
+                        <TaskCard
                           key={item.id}
-                          className="p-3 rounded-3"
-                          style={{
-                            background: "#0b0f14",
-                            border: "1px solid #26313d",
-                          }}
-                        >
-                          <div className="d-flex justify-content-between align-items-start gap-3">
-                            <div>
-                              <h3 className="h5 fw-bold mb-1">{item.task}</h3>
-
-                              <p
-                                className="mb-0"
-                                style={{
-                                  color: "#8793a1",
-                                }}
-                              >
-                                {item.description}
-                              </p>
-                            </div>
-
-                            <div className="d-flex gap-2">
-                              <button
-                                onClick={() => {
-                                  setError("");
-                                  setEditingId(item.id);
-                                  setTask(item.task);
-                                  setDescription(item.description);
-                                }}
-                                type="button"
-                                className="btn btn-sm btn-outline-success"
-                              >
-                                Edit
-                              </button>
-
-                              {editingId ? (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setError("");
-                                    setEditingId(null);
-                                    setTask("");
-                                    setDescription("");
-                                  }}
-                                  className="btn btn-sm btn-outline-danger"
-                                >
-                                  Cancel
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setTaskToDelete(item.id);
-                                    setShowConfirm(true);
-                                  }}
-                                  className="btn btn-sm btn-outline-danger"
-                                >
-                                  Delete
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                          item={item}
+                          editingId={editingId}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                          onCancelEdit={handleCancelEdit}
+                        />
                       ))}
+
+                      {/* Confirm Modal */}
                       {showConfirm && (
-                        <div
-                          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                          style={{
-                            background: "rgba(0, 0, 0, 0.65)",
-                            zIndex: 1050,
+                        <ConfirmModal
+                          onCancel={() => {
+                            setShowConfirm(false);
                           }}
-                        >
-                          <div
-                            className="p-4 rounded-4 shadow-lg text-center"
-                            style={{
-                              width: "90%",
-                              maxWidth: "400px",
-                              background: "#121820",
-                              border: "1px solid #26313d",
-                            }}
-                          >
-                            <h3
-                              className="h5 fw-bold mb-3"
-                              style={{ color: "#f5f7fa" }}
-                            >
-                              Delete task?
-                            </h3>
+                          onConfirm={() => {
+                            if (taskToDelete) {
+                              deleteTask(taskToDelete);
+                              setTaskToDelete(null);
+                            }
 
-                            <p className="mb-4" style={{ color: "#8793a1" }}>
-                              Are you sure you want to delete this task?
-                            </p>
-
-                            <div className="d-flex justify-content-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setShowConfirm(false);
-                                }}
-                                className="btn btn-outline-light px-4"
-                              >
-                                No
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (taskToDelete) {
-                                    deleteTask(taskToDelete);
-                                    setTaskToDelete(null);
-                                  }
-
-                                  setShowConfirm(false);
-                                }}
-                                className="btn btn-danger px-4"
-                              >
-                                Yes, delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
+                            setShowConfirm(false);
+                          }}
+                        />
                       )}
                     </div>
                   )}
