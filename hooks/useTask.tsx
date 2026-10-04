@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -13,7 +13,9 @@ type Task = {
   id: string;
   task: string;
   description: string;
+  status: "pending" | "completed" | "in-progress";
 };
+
 const getFirebaseErrorMessage = (error: unknown, action: string) => {
   const e = error as {
     code?: string;
@@ -42,10 +44,16 @@ export default function useTask() {
   const [error, setError] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const editTask = async (id: string, task: string, description: string) => {
+  const editTask = async (
+    id: string,
+    task: string,
+    description: string,
+    status: "pending" | "completed" | "in-progress",
+  ) => {
     const user = auth.currentUser;
 
     if (!user) return false;
+
     if (!task.trim()) {
       setError("Task is required.");
       return false;
@@ -67,12 +75,13 @@ export default function useTask() {
       await updateDoc(taskRef, {
         task: task,
         description: description,
+        status: status,
       });
 
       return true;
     } catch (error) {
       console.error("Failed to update task:", error);
-      setError("Failed to update task. Please try again.");
+      setError(getFirebaseErrorMessage(error, "update this task"));
 
       return false;
     }
@@ -91,7 +100,7 @@ export default function useTask() {
       setTasks(tasks.filter((task) => task.id !== id));
     } catch (error) {
       console.error("Failed to delete task:", error);
-      setError("Failed to delete task. Please try again.");
+      setError(getFirebaseErrorMessage(error, "delete this task"));
     }
   };
 
@@ -106,6 +115,7 @@ export default function useTask() {
       setError("Please enter a task title.");
       return;
     }
+
     if (task.trim().length > 100) {
       setError("Task title must be 100 characters or less.");
       return;
@@ -124,12 +134,14 @@ export default function useTask() {
       const docRef = await addDoc(tasksCollection, {
         task,
         description,
+        status: "pending",
       });
 
-      const newTask = {
+      const newTask: Task = {
         id: docRef.id,
         task,
         description,
+        status: "pending",
       };
 
       setTasks([...tasks, newTask]);
@@ -138,7 +150,7 @@ export default function useTask() {
       setDescription("");
     } catch (error) {
       console.error("Failed to add task:", error);
-      setError("Failed to add task. Please try again.");
+      setError(getFirebaseErrorMessage(error, "add this task"));
     }
   };
 
@@ -162,7 +174,7 @@ export default function useTask() {
       setTasks(tasksData);
     } catch (error) {
       console.error("Failed to load tasks:", error);
-      setError("Failed to load tasks. Please try again.");
+      setError(getFirebaseErrorMessage(error, "load your tasks"));
     } finally {
       setLoadingTasks(false);
     }

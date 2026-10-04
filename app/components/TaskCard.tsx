@@ -1,8 +1,11 @@
+type TaskStatus = "pending" | "completed" | "in-progress";
+
 type TaskCardProps = {
   item: {
     id: string;
     task: string;
     description: string;
+    status: TaskStatus;
   };
   editingId: string | null;
   onEdit: (id: string) => void;
@@ -17,6 +20,26 @@ export default function TaskCard({
   onDelete,
   onCancelEdit,
 }: TaskCardProps) {
+  const statusStyles = {
+    pending: {
+      background: "#3d3212",
+      color: "#f5c542",
+      text: "🟡 Pending",
+    },
+    "in-progress": {
+      background: "#132c46",
+      color: "#4da3ff",
+      text: "🔵 In Progress",
+    },
+    completed: {
+      background: "#16351f",
+      color: "#4ade80",
+      text: "🟢 Completed",
+    },
+  };
+
+  const currentStatus = statusStyles[item.status];
+
   return (
     <div
       key={item.id}
@@ -31,7 +54,7 @@ export default function TaskCard({
           <h3 className="h5 fw-bold mb-1">{item.task}</h3>
 
           <p
-            className="mb-0"
+            className="mb-2"
             style={{
               color: "#8793a1",
               overflowWrap: "anywhere",
@@ -39,6 +62,17 @@ export default function TaskCard({
           >
             {item.description}
           </p>
+
+          <span
+            className="badge rounded-pill"
+            style={{
+              background: currentStatus.background,
+              color: currentStatus.color,
+              fontWeight: 600,
+            }}
+          >
+            {currentStatus.text}
+          </span>
         </div>
 
         <div className="d-flex gap-2">

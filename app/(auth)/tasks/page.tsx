@@ -11,12 +11,15 @@ import TaskCard from "../../components/TaskCard";
 import TaskForm from "../../components/TaskForm";
 import TaskHeader from "../../components/TaskHeader";
 
+type TaskStatus = "pending" | "completed" | "in-progress";
+
 export default function TasksPage() {
   const router = useRouter();
   const { user, loading } = useAuthGuard();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [status, setStatus] = useState<TaskStatus>("pending");
 
   const {
     setTask,
@@ -50,6 +53,7 @@ export default function TasksPage() {
     setEditingId(id);
     setTask(selectedTask.task);
     setDescription(selectedTask.description);
+    setStatus(selectedTask.status);
   };
 
   const handleCancelEdit = () => {
@@ -57,6 +61,7 @@ export default function TasksPage() {
     setEditingId(null);
     setTask("");
     setDescription("");
+    setStatus("pending");
   };
 
   const handleDelete = (id: string) => {
@@ -71,10 +76,12 @@ export default function TasksPage() {
       setError("Task is required.");
       return;
     }
+
     if (task.trim().length > 100) {
       setError("Task title must be 100 characters or less.");
       return;
     }
+
     if (description.trim().length > 500) {
       setError("Description must be 500 characters or less.");
       return;
@@ -85,7 +92,7 @@ export default function TasksPage() {
     setSaving(true);
 
     if (editingId) {
-      const success = await editTask(editingId, task, description);
+      const success = await editTask(editingId, task, description, status);
 
       if (!success) {
         setSaving(false);
@@ -95,6 +102,7 @@ export default function TasksPage() {
       setEditingId(null);
       setTask("");
       setDescription("");
+      setStatus("pending");
 
       await getTasks();
       setSaving(false);
@@ -133,6 +141,8 @@ export default function TasksPage() {
             setTask={setTask}
             description={description}
             setDescription={setDescription}
+            status={status}
+            setStatus={setStatus}
             error={error}
             saving={saving}
             editingId={editingId}

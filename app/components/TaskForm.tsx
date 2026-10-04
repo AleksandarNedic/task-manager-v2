@@ -1,8 +1,12 @@
+type TaskStatus = "pending" | "completed" | "in-progress";
+
 type TaskFormProps = {
   task: string;
   setTask: (value: string) => void;
   description: string;
   setDescription: (value: string) => void;
+  status: TaskStatus;
+  setStatus: (value: TaskStatus) => void;
   error: string;
   saving: boolean;
   editingId: string | null;
@@ -14,6 +18,8 @@ export default function TaskForm({
   setTask,
   description,
   setDescription,
+  status,
+  setStatus,
   error,
   saving,
   editingId,
@@ -56,7 +62,7 @@ export default function TaskForm({
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             <label
               htmlFor="description"
               className="form-label fw-semibold"
@@ -79,6 +85,32 @@ export default function TaskForm({
                 color: "#ffffff",
               }}
             />
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="status"
+              className="form-label fw-semibold"
+              style={{ color: "#dce2e8" }}
+            >
+              Status
+            </label>
+
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as TaskStatus)}
+              id="status"
+              className="form-select form-select-lg"
+              style={{
+                background: "#0b0f14",
+                border: "1px solid #344150",
+                color: "#ffffff",
+              }}
+            >
+              <option value="pending">🟡 Pending</option>
+              <option value="in-progress">🔵 In Progress</option>
+              <option value="completed">🟢 Completed</option>
+            </select>
           </div>
 
           {error && (
