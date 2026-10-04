@@ -27,6 +27,7 @@ The project is being developed as a practical full-stack learning project, with 
 * Delete confirmation modal
 * Responsive dark UI
 * Bootstrap styling
+* Component-based task architecture
 
 ## Tech Stack
 
@@ -41,37 +42,26 @@ The project is being developed as a practical full-stack learning project, with 
 
 ```text
 app/
-
 ├── page.tsx
-
 ├── (auth)/
-
 │   ├── login/
-
 │   │   └── page.tsx
-
 │   └── register/
-
 │       └── page.tsx
-
 └── tasks/
-
     └── page.tsx
 
 components/
-
-└── TaskForm.tsx
+├── Task.tsx
+├── TaskForm.tsx
+└── ConfirmModal.tsx
 
 hooks/
-
 ├── useLogin.ts
-
 ├── useRegister.ts
-
 └── useTask.ts
 
 lib/
-
 └── firebase.ts
 ```
 
@@ -81,15 +71,10 @@ Each user's tasks are stored separately using their Firebase Authentication UID:
 
 ```text
 users/
-
 └── {userId}/
-
     └── tasks/
-
         └── {taskId}/
-
             ├── task
-
             └── description
 ```
 
@@ -103,6 +88,33 @@ The application currently supports the complete CRUD cycle for tasks:
 * **Read** — tasks are loaded from Firestore
 * **Update** — users can edit existing tasks
 * **Delete** — users can delete tasks
+
+## Component Architecture
+
+The tasks page has been refactored into smaller components to improve readability, maintainability, and separation of responsibilities.
+
+### Tasks Page
+
+Responsible for coordinating the task management page and connecting the different parts of the application.
+
+### TaskForm
+
+Handles:
+
+* Creating tasks
+* Editing tasks
+* Form input
+* Validation
+* Saving state
+* Validation error display
+
+### Task
+
+Represents an individual task and handles the UI for a single task.
+
+### ConfirmModal
+
+Provides reusable confirmation UI for destructive actions such as deleting a task.
 
 ## Validation
 
@@ -188,7 +200,7 @@ Future improvements may include more detailed loading feedback for individual op
 
 ## Registration Feedback
 
-The registration flow currently provides feedback after successful account creation.
+The registration flow provides feedback after successful account creation.
 
 After Firebase successfully creates the account:
 
@@ -204,7 +216,7 @@ Go to login →
 
 ## Delete Confirmation
 
-Deleting a task now requires user confirmation.
+Deleting a task requires user confirmation.
 
 When the user selects **Delete**, a custom confirmation modal is displayed:
 
@@ -220,14 +232,16 @@ The modal uses the application's existing dark UI design and is displayed in the
 
 The selected task ID is temporarily stored so the correct task can be deleted after confirmation.
 
+## Current Development Status
+
+The main task management functionality and CRUD operations are implemented.
+
+The application has also been refactored into smaller reusable components.
+
+Current focus is shifting from basic functionality toward application security, stronger validation, improved error handling, and deployment.
+
 ## Future Improvements
 
-Planned improvements include:
-
-* Refactor `TasksPage` into smaller reusable components
-* Extract task list into a dedicated `TaskList` component
-* Extract individual tasks into a `TaskItem` component
-* Extract the delete confirmation into a reusable `DeleteConfirmation` component
 * Improve Firebase-specific error handling
 * Add stronger Firestore Security Rules
 * Improve authentication security
@@ -235,4 +249,19 @@ Planned improvements include:
 * Improve loading and error feedback
 * Deploy the application
 * Perform authorized security testing on the deployed application
-* Test for common web security issues such as broken access control, XSS, authentication issues, and information disclosure
+* Test for common web security issues such as:
+
+  * Broken access control
+  * IDOR
+  * XSS
+  * Authentication issues
+  * Information disclosure
+  * Improper Firestore access
+* Fix discovered security issues
+* Retest the application after security fixes
+
+## Security Learning Goal
+
+After the application is deployed, it will be used as an authorized personal security-testing target.
+
+The goal is to use the project to practice identifying and fixing common web application vulnerabilities while learning how frontend architecture, authentication, authorization, databases, and web security interact.
