@@ -45,6 +45,7 @@ export default function TaskForm({
               onChange={(e) => setTask(e.target.value)}
               id="task"
               type="text"
+              maxLength={25}
               placeholder="What needs to be done?"
               className="form-control form-control-lg"
               style={{
@@ -68,6 +69,7 @@ export default function TaskForm({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               id="description"
+              maxLength={250}
               placeholder="Add some details..."
               rows={5}
               className="form-control"

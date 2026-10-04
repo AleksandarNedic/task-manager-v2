@@ -14,6 +14,25 @@ type Task = {
   task: string;
   description: string;
 };
+const getFirebaseErrorMessage = (error: unknown, action: string) => {
+  const e = error as {
+    code?: string;
+  };
+
+  switch (e.code) {
+    case "permission-denied":
+      return `You do not have permission to ${action}.`;
+
+    case "unavailable":
+      return "Network error. Please check your internet connection.";
+
+    case "failed-precondition":
+      return `Unable to ${action}. Please try again.`;
+
+    default:
+      return `Failed to ${action}. Please try again.`;
+  }
+};
 
 export default function useTask() {
   const [loadingTasks, setLoadingTasks] = useState(false);
@@ -27,6 +46,20 @@ export default function useTask() {
     const user = auth.currentUser;
 
     if (!user) return false;
+    if (!task.trim()) {
+      setError("Task is required.");
+      return false;
+    }
+
+    if (task.trim().length > 100) {
+      setError("Task title must be 100 characters or less.");
+      return false;
+    }
+
+    if (description.trim().length > 500) {
+      setError("Description must be 500 characters or less.");
+      return false;
+    }
 
     const taskRef = doc(db, "users", user.uid, "tasks", id);
 
@@ -71,6 +104,15 @@ export default function useTask() {
 
     if (!task.trim()) {
       setError("Please enter a task title.");
+      return;
+    }
+    if (task.trim().length > 100) {
+      setError("Task title must be 100 characters or less.");
+      return;
+    }
+
+    if (description.trim().length > 500) {
+      setError("Description must be 500 characters or less.");
       return;
     }
 

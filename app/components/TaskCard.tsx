@@ -27,13 +27,14 @@ export default function TaskCard({
       }}
     >
       <div className="d-flex justify-content-between align-items-start gap-3">
-        <div>
+        <div className="flex-grow-1" style={{ minWidth: 0 }}>
           <h3 className="h5 fw-bold mb-1">{item.task}</h3>
 
           <p
             className="mb-0"
             style={{
               color: "#8793a1",
+              overflowWrap: "anywhere",
             }}
           >
             {item.description}

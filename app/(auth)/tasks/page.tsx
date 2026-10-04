@@ -71,6 +71,14 @@ export default function TasksPage() {
       setError("Task is required.");
       return;
     }
+    if (task.trim().length > 100) {
+      setError("Task title must be 100 characters or less.");
+      return;
+    }
+    if (description.trim().length > 500) {
+      setError("Description must be 500 characters or less.");
+      return;
+    }
 
     setError("");
 
