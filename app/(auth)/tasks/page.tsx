@@ -22,6 +22,7 @@ export default function TasksPage() {
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [status, setStatus] = useState<TaskStatus>("pending");
   const [priority, setPriority] = useState<TaskPriority>("medium");
+  const [searchTask, setSearchTask] = useState("");
 
   const {
     setTask,
@@ -45,6 +46,14 @@ export default function TasksPage() {
 
     getTasks();
   }, [user]);
+
+  const filteredTasks = tasks.filter((task) =>
+    task.task.toLowerCase().includes(searchTask.toLowerCase()),
+  );
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTask(e.target.value);
+  };
 
   const handleEdit = (id: string) => {
     const selectedTask = tasks.find((item) => item.id === id);
@@ -143,7 +152,10 @@ export default function TasksPage() {
     >
       <div className="container">
         {/* Header */}
-        <TaskHeader handleLogout={handleLogout} />
+        <TaskHeader
+          handleLogout={handleLogout}
+          handleSearchInput={handleSearchInput}
+        />
 
         <div className="row g-4">
           {/* Add Task */}
@@ -202,9 +214,16 @@ export default function TasksPage() {
 
                       <small>Add your first task to get started.</small>
                     </div>
+                  ) : filteredTasks.length === 0 ? (
+                    <div
+                      className="text-center py-5"
+                      style={{ color: "#687585" }}
+                    >
+                      <p className="mb-1">No tasks found.</p>
+                    </div>
                   ) : (
                     <div className="d-flex flex-column gap-3">
-                      {tasks.map((item) => (
+                      {filteredTasks.map((item) => (
                         <TaskCard
                           key={item.id}
                           item={item}

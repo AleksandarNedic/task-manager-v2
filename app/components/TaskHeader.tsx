@@ -1,8 +1,12 @@
 type TaskHeaderProps = {
   handleLogout: () => void;
+  handleSearchInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export default function TaskHeader({ handleLogout }: TaskHeaderProps) {
+export default function TaskHeader({
+  handleLogout,
+  handleSearchInput,
+}: TaskHeaderProps) {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-5">
@@ -16,18 +20,33 @@ export default function TaskHeader({ handleLogout }: TaskHeaderProps) {
           </p>
         </div>
 
-        <button
-          onClick={handleLogout}
-          type="button"
-          className="btn fw-semibold"
-          style={{
-            background: "#1a222c",
-            color: "#f5f7fa",
-            border: "1px solid #344150",
-          }}
-        >
-          Logout
-        </button>
+        <div className="d-flex align-items-center gap-3">
+          <input
+            type="text"
+            className="form-control search-input"
+            placeholder="Search tasks..."
+            onChange={handleSearchInput}
+            style={{
+              width: "220px",
+              background: "#1a222c",
+              color: "#f5f7fa",
+              border: "1px solid #344150",
+            }}
+          />
+
+          <button
+            onClick={handleLogout}
+            type="button"
+            className="btn fw-semibold"
+            style={{
+              background: "#1a222c",
+              color: "#f5f7fa",
+              border: "1px solid #344150",
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="row g-4"></div>

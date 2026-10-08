@@ -1,21 +1,5 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return (
-      <main>
-        <h1>Task Management</h1>
-
-        <div>
-          <Link href="/login">
-            <button>Login</button>
-          </Link>
-
-          <span> </span>
-
-          <Link href="/register">
-            <button>Register</button>
-          </Link>
-        </div>
-      </main>
-  );
+  redirect("/login");
 }
