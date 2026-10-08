@@ -17,6 +17,7 @@ button {
   color-scheme: dark;
 }
 
+
 .search-input::placeholder {
   color: #8793a1 !important;
   opacity: 1;

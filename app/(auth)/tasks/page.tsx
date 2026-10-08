@@ -23,6 +23,7 @@ export default function TasksPage() {
   const [status, setStatus] = useState<TaskStatus>("pending");
   const [priority, setPriority] = useState<TaskPriority>("medium");
   const [searchTask, setSearchTask] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const {
     setTask,
@@ -47,8 +48,10 @@ export default function TasksPage() {
     getTasks();
   }, [user]);
 
-  const filteredTasks = tasks.filter((task) =>
-    task.task.toLowerCase().includes(searchTask.toLowerCase()),
+  const filteredTasks = tasks.filter(
+    (task) =>
+      task.task.toLowerCase().includes(searchTask.toLowerCase()) &&
+      (filterStatus === "all" || task.status === filterStatus),
   );
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,6 +186,41 @@ export default function TasksPage() {
                 border: "1px solid #26313d",
               }}
             >
+              {/* Tasks Header */}
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="h4 fw-bold mb-0">My Tasks</h2>
+
+                <div className="d-flex align-items-center gap-2">
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="form-select"
+                    style={{
+                      width: "130px",
+                      background: "#1a222c",
+                      color: "#f5f7fa",
+                      border: "1px solid #344150",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <option value="all">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+
+                  <span
+                    className="badge rounded-pill"
+                    style={{
+                      background: "#c7f000",
+                      color: "#0b0f14",
+                    }}
+                  >
+                    {tasks.length}
+                  </span>
+                </div>
+              </div>
+
               {loadingTasks ? (
                 <div className="text-center py-5">
                   <p className="mb-0" style={{ color: "#8793a1" }}>
@@ -191,20 +229,6 @@ export default function TasksPage() {
                 </div>
               ) : (
                 <>
-                  <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="h4 fw-bold mb-0">My Tasks</h2>
-
-                    <span
-                      className="badge rounded-pill"
-                      style={{
-                        background: "#c7f000",
-                        color: "#0b0f14",
-                      }}
-                    >
-                      {tasks.length}
-                    </span>
-                  </div>
-
                   {tasks.length === 0 ? (
                     <div
                       className="text-center py-5"
