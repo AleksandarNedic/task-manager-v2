@@ -11,7 +11,7 @@ export default function LoginPage() {
 
     const { login, error } = useLogin();
 
-    const handleLogin = async (e: any) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         await login(email, password);
@@ -137,7 +137,7 @@ export default function LoginPage() {
 
                             <div className="text-center mt-4">
                                 <span style={{ color: "#687585" }}>
-                                    Don't have an account?{" "}
+                                   Don&apos;t have an account?
                                 </span>
 
                                 <Link
