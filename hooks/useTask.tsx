@@ -56,27 +56,12 @@ export default function useTask() {
 
     if (!user) return false;
 
-    if (!task.trim()) {
-      setError("Task is required.");
-      return false;
-    }
-
-    if (task.trim().length > 100) {
-      setError("Task title must be 100 characters or less.");
-      return false;
-    }
-
-    if (description.trim().length > 500) {
-      setError("Description must be 500 characters or less.");
-      return false;
-    }
-
     const taskRef = doc(db, "users", user.uid, "tasks", id);
 
     try {
       await updateDoc(taskRef, {
-        task: task,
-        description: description,
+        task: task.trim(),
+        description: description.trim(),
         status: status,
         priority: priority,
       });
@@ -100,7 +85,7 @@ export default function useTask() {
     try {
       await deleteDoc(taskRef);
 
-      setTasks(tasks.filter((task) => task.id !== id));
+      setTasks((prev) => prev.filter((task) => task.id !== id));
     } catch (error) {
       console.error("Failed to delete task:", error);
       setError(getFirebaseErrorMessage(error, "delete this task"));
@@ -117,42 +102,27 @@ export default function useTask() {
 
     if (!user) return;
 
-    if (!task.trim()) {
-      setError("Please enter a task title.");
-      return;
-    }
-
-    if (task.trim().length > 100) {
-      setError("Task title must be 100 characters or less.");
-      return;
-    }
-
-    if (description.trim().length > 500) {
-      setError("Description must be 500 characters or less.");
-      return;
-    }
-
     setError("");
 
     const tasksCollection = collection(db, "users", user.uid, "tasks");
 
     try {
       const docRef = await addDoc(tasksCollection, {
-        task,
-        description,
+        task: task.trim(),
+        description: description.trim(),
         status: "pending",
         priority: priority,
       });
 
       const newTask: Task = {
         id: docRef.id,
-        task,
-        description,
+        task: task.trim(),
+        description: description.trim(),
         status: "pending",
         priority: priority,
       };
 
-      setTasks([...tasks, newTask]);
+      setTasks((prev) => [...prev, newTask]);
 
       setTask("");
       setDescription("");
@@ -167,6 +137,7 @@ export default function useTask() {
 
     if (!user) return;
 
+    setError("");
     setLoadingTasks(true);
 
     const tasksCollection = collection(db, "users", user.uid, "tasks");

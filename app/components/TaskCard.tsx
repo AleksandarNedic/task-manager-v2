@@ -122,7 +122,7 @@ export default function TaskCard({
             Edit
           </button>
 
-          {editingId ? (
+          {editingId === item.id ? (
             <button
               type="button"
               onClick={onCancelEdit}

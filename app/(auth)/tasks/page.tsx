@@ -46,6 +46,7 @@ export default function TasksPage() {
     if (!user) return;
 
     getTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const filteredTasks = tasks.filter(
@@ -259,21 +260,6 @@ export default function TasksPage() {
                       ))}
 
                       {/* Confirm Modal */}
-                      {showConfirm && (
-                        <ConfirmModal
-                          onCancel={() => {
-                            setShowConfirm(false);
-                          }}
-                          onConfirm={() => {
-                            if (taskToDelete) {
-                              deleteTask(taskToDelete);
-                              setTaskToDelete(null);
-                            }
-
-                            setShowConfirm(false);
-                          }}
-                        />
-                      )}
                     </div>
                   )}
                 </>
@@ -282,6 +268,22 @@ export default function TasksPage() {
           </div>
         </div>
       </div>
+
+      {showConfirm && (
+        <ConfirmModal
+          onCancel={() => {
+            setShowConfirm(false);
+          }}
+          onConfirm={() => {
+            if (taskToDelete) {
+              deleteTask(taskToDelete);
+              setTaskToDelete(null);
+            }
+
+            setShowConfirm(false);
+          }}
+        />
+      )}
     </main>
   );
 }

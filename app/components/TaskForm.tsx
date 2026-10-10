@@ -39,7 +39,9 @@ export default function TaskForm({
           border: "1px solid #26313d",
         }}
       >
-        <h2 className="h4 fw-bold mb-4">Add a new task</h2>
+        <h2 className="h4 fw-bold mb-4">
+          {editingId ? "Edit task" : "Add a new task"}
+        </h2>
 
         <form onSubmit={onSubmit}>
           <div className="mb-3">

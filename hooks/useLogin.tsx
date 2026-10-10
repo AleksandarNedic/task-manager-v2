@@ -15,8 +15,16 @@ export default function useLogin() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/tasks");
-    } catch {
-      setError("Invalid email or password.");
+    } catch (err) {
+      const code = (err as { code?: string }).code ?? "";
+
+      if (code === "auth/network-request-failed") {
+        setError("Network error. Check your internet connection.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } finally {
       setLoading(false);
     }

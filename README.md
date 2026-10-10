@@ -23,11 +23,12 @@ The project is being developed as a practical full-stack learning project, with 
 - Live task search
 - Task filtering by status
 - Combined search and status filtering
-- Form validation
+- Form validation (React Hook Form for login and registration)
+- Password complexity validation
 - Basic error messaging
 - Firebase error handling
 - Loading state while fetching tasks
-- Saving state during form submission
+- Loading and saving states during form submission
 - Registration success feedback
 - Delete confirmation modal
 - Responsive dark UI
@@ -42,6 +43,7 @@ The project is being developed as a practical full-stack learning project, with 
 - Next.js
 - React
 - TypeScript
+- React Hook Form
 - Firebase Authentication
 - Firebase Firestore
 - Bootstrap
@@ -51,6 +53,11 @@ The project is being developed as a practical full-stack learning project, with 
 ```text
 app/
 ├── page.tsx
+├── components/
+│   ├── TaskCard.tsx
+│   ├── TaskForm.tsx
+│   ├── ConfirmModal.tsx
+│   └── TaskHeader.tsx
 └── (auth)/
     ├── login/
     │   └── page.tsx
@@ -58,12 +65,6 @@ app/
     │   └── page.tsx
     └── tasks/
         └── page.tsx
-
-components/
-├── TaskCard.tsx
-├── TaskForm.tsx
-├── ConfirmModal.tsx
-└── TaskHeader.tsx
 
 hooks/
 ├── useLogin.ts
@@ -102,7 +103,7 @@ Tasks currently support three statuses:
 - 🔵 In Progress
 - 🟢 Completed
 
-The selected status is stored in Firestore and can be changed when editing a task.
+New tasks are created with the `pending` status. The status can be changed when editing a task.
 
 When a task is completed, its priority is hidden from the task card because priority is no longer relevant to a completed task.
 
@@ -114,7 +115,7 @@ Tasks currently support three priority levels:
 - 🟡 Medium
 - 🔴 High
 
-Priority is stored in Firestore and can be selected when creating or editing a task.
+Priority is stored in Firestore and can be selected when creating or editing a task. The default priority is Medium.
 
 Priority is displayed on active tasks and hidden when the task status is `completed`.
 
@@ -173,12 +174,14 @@ It manages page-level state such as:
 - Search state
 - Status filter state
 
+It also contains the task form submission logic, including task validation.
+
 ### TaskForm
 
 Handles:
 
 - Creating tasks
-- Editing tasks
+- Editing tasks (the form heading changes to "Edit task" while editing)
 - Task title input
 - Description input
 - Status selection
@@ -198,11 +201,11 @@ It displays:
 - Status
 - Priority
 - Edit button
-- Delete/Cancel button
+- Delete button, or a Cancel button on the task that is currently being edited
 
 ### ConfirmModal
 
-Provides reusable confirmation UI for destructive actions such as deleting a task.
+Provides reusable confirmation UI for destructive actions such as deleting a task. It is rendered at the page level, outside the task list.
 
 ### TaskHeader
 
@@ -225,17 +228,21 @@ Handles the main task-related functionality:
 
 ### useLogin
 
-Handles Firebase user login functionality and login-related errors.
+Handles Firebase user login functionality, the login loading state, redirecting to `/tasks` after a successful login, and login-related errors.
 
 ### useRegister
 
-Handles Firebase account registration and registration-related validation and errors.
+Handles Firebase account registration and registration-related errors.
+
+After the account is created, the user is signed out immediately. Firebase signs users in automatically after registration, so signing out makes the "You can now log in" message accurate.
 
 ### useAuthGuard
 
-Protects the tasks page by checking the current authentication state and redirecting unauthenticated users.
+Protects the tasks page by checking the current authentication state and redirecting unauthenticated users to `/login`.
 
 ## Validation
+
+### Task Validation
 
 The task form validates user input before submitting tasks.
 
@@ -243,10 +250,13 @@ Current task validation includes:
 
 - Task title is required
 - Whitespace-only input is rejected
-- Task title length is limited
-- Description length is limited
+- Task title is limited to 100 characters
+- Description is limited to 500 characters
+- Title and description are trimmed before being saved
 - Validation is applied to both creating and editing tasks
 - Validation errors are displayed to the user
+
+The length limits are enforced both with `maxLength` on the inputs and in the form submission logic. The validation is done once in the tasks page submit handler, so both creating and editing go through the same checks.
 
 Example validation message:
 
@@ -254,11 +264,25 @@ Example validation message:
 Task is required.
 ```
 
-Registration also includes basic validation:
+### Authentication Validation
 
+The login and registration forms use React Hook Form for form state and client-side validation.
+
+Login validation:
+
+- Email is required
 - Email format is validated
-- Password length is validated
-- Password confirmation is validated
+- Password is required
+
+Registration validation:
+
+- Email is required and its format is validated
+- Password is required
+- Password must be at least 8 characters long
+- Password must contain an uppercase letter, a lowercase letter, a number, and a special character
+- Password confirmation is required and must match the password
+
+Client-side validation improves the user experience, but it is not a security boundary. The authentication service remains responsible for enforcing its own account and password policies.
 
 ## Error Handling
 
@@ -287,14 +311,26 @@ Failed to delete this task. Please try again.
 
 Specific Firebase errors such as permission errors and network errors are also handled where applicable.
 
-Registration also handles Firebase-specific errors including:
+### Login Errors
+
+Incorrect credentials always show the same generic message:
+
+```text
+Invalid email or password.
+```
+
+This is intentional, so the application does not reveal whether an account exists for a given email. Network errors and too many failed attempts are shown with their own messages.
+
+### Registration Errors
+
+Registration handles Firebase-specific errors including:
 
 - Email already in use
 - Invalid email
 - Weak password
+- Registration not enabled
 - Network errors
 - Too many requests
-- Firebase configuration issues
 
 ## Loading States
 
@@ -318,11 +354,26 @@ During task creation or editing:
 - Button text changes to `Saving...`
 - Duplicate submissions are prevented while the operation is in progress
 
+### Login Loading
+
+During login:
+
+- Submit button becomes disabled
+- A loading indicator is displayed
+- Button text changes to `Logging in...`
+
+### Registration Loading
+
+During registration:
+
+- Submit button becomes disabled (using the `isSubmitting` state from React Hook Form)
+- Button text changes to `Creating...`
+
 ## Registration Feedback
 
 The registration flow provides feedback after successful account creation.
 
-After Firebase successfully creates the account:
+After Firebase successfully creates the account and the user is signed out, the registration page shows:
 
 ```text
 Account created successfully. You can now log in.
@@ -383,9 +434,17 @@ Recent code-quality improvements include:
 
 - Removed remaining `any` types
 - Fixed ESLint issues
-- Improved React Hook dependency handling
 - Improved component separation
+- Moved task validation to a single place
 - Moved Firebase configuration to environment variables
+
+## Known Limitations
+
+These are known gaps that are planned to be reviewed during security testing:
+
+- Task length limits (100 and 500 characters) are enforced only on the client. Firestore Security Rules do not validate field length or type yet.
+- Firebase Authentication password policy settings have not been checked against the client-side password rules yet.
+- There is no email verification and no password reset yet.
 
 ## Current Development Status
 
