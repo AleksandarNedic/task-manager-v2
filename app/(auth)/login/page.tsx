@@ -1,19 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 import useLogin from "../../../hooks/useLogin";
 
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>();
 
   const { login, error, loading } = useLogin();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    await login(email, password);
+  const onSubmit = async (data: LoginFormData) => {
+    await login(data.email, data.password);
   };
 
   return (
@@ -57,7 +63,7 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleLogin}>
+              <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <div className="mb-3">
                   <label
                     htmlFor="email"
@@ -68,17 +74,31 @@ export default function LoginPage() {
                   </label>
 
                   <input
-                    onChange={(e) => setEmail(e.target.value)}
                     id="email"
                     type="email"
                     placeholder="you@example.com"
+                    autoComplete="email"
                     className="form-control form-control-lg"
+                    aria-invalid={!!errors.email}
+                    {...registerField("email", {
+                      required: "Email is required.",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Please enter a valid email address.",
+                      },
+                    })}
                     style={{
                       background: "#0b0f14",
                       border: "1px solid #344150",
                       color: "#ffffff",
                     }}
                   />
+
+                  {errors.email && (
+                    <p className="text-danger small mt-1 mb-0">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -91,25 +111,37 @@ export default function LoginPage() {
                   </label>
 
                   <input
-                    onChange={(e) => setPassword(e.target.value)}
                     id="password"
                     type="password"
                     placeholder="Enter your password"
+                    autoComplete="current-password"
                     className="form-control form-control-lg"
+                    aria-invalid={!!errors.password}
+                    {...registerField("password", {
+                      required: "Password is required.",
+                    })}
                     style={{
                       background: "#0b0f14",
                       border: "1px solid #344150",
                       color: "#ffffff",
                     }}
                   />
+
+                  {errors.password && (
+                    <p className="text-danger small mt-1 mb-0">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
 
                 {error && (
-                  <div className="alert alert-danger py-2">{error}</div>
+                  <div className="alert alert-danger py-2" role="alert">
+                    {error}
+                  </div>
                 )}
 
                 {loading && (
-                  <div className="text-center">
+                  <div className="text-center mb-2">
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
@@ -132,7 +164,7 @@ export default function LoginPage() {
 
               <div className="text-center mt-4">
                 <span style={{ color: "#687585" }}>
-                  Don&apos;t have an account?
+                  Don&apos;t have an account?{" "}
                 </span>
 
                 <Link

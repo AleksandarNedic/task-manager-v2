@@ -20,6 +20,9 @@ The project is being developed as a practical full-stack learning project, with 
 - Task count
 - Task status management
 - Task priority management
+- Live task search
+- Task filtering by status
+- Combined search and status filtering
 - Form validation
 - Basic error messaging
 - Firebase error handling
@@ -31,6 +34,8 @@ The project is being developed as a practical full-stack learning project, with 
 - Bootstrap styling
 - Component-based task architecture
 - Reusable Firebase error handling
+- Firebase configuration using environment variables
+- TypeScript type-safe implementation
 
 ## Tech Stack
 
@@ -113,6 +118,34 @@ Priority is stored in Firestore and can be selected when creating or editing a t
 
 Priority is displayed on active tasks and hidden when the task status is `completed`.
 
+## Search and Filtering
+
+The task list supports live search and status filtering.
+
+### Search
+
+Users can search tasks by title using the search field in the task header.
+
+Search:
+
+- Updates automatically while typing
+- Is case-insensitive
+- Matches task titles
+- Does not require a search button
+
+### Status Filter
+
+Users can filter tasks by status:
+
+- All
+- Pending
+- In Progress
+- Completed
+
+Search and status filtering can also be combined.
+
+For example, searching for `gym` while selecting `Completed` will only display completed tasks whose titles contain `gym`.
+
 ## CRUD Operations
 
 The application currently supports the complete CRUD cycle for tasks:
@@ -137,6 +170,8 @@ It manages page-level state such as:
 - Task deletion confirmation
 - Task status
 - Task priority
+- Search state
+- Status filter state
 
 ### TaskForm
 
@@ -171,7 +206,7 @@ Provides reusable confirmation UI for destructive actions such as deleting a tas
 
 ### TaskHeader
 
-Contains the main tasks page header and logout functionality.
+Contains the main tasks page header, search functionality, and logout functionality.
 
 ## Custom Hooks
 
@@ -330,6 +365,28 @@ This prevents one authenticated user from directly accessing another user's task
 
 The authorization behavior has also been manually tested by attempting to access another user's task while authenticated as a different user. Firestore correctly rejected the unauthorized request.
 
+## Environment Configuration
+
+Firebase configuration is stored using environment variables instead of being directly defined in the source code.
+
+The project uses `.env.local` for local development.
+
+Firebase client-side environment variables use the `NEXT_PUBLIC_` prefix because they are required by the client-side Firebase application.
+
+The `.env.local` file is excluded from Git using `.gitignore`.
+
+## Code Quality
+
+The project uses TypeScript throughout the application.
+
+Recent code-quality improvements include:
+
+- Removed remaining `any` types
+- Fixed ESLint issues
+- Improved React Hook dependency handling
+- Improved component separation
+- Moved Firebase configuration to environment variables
+
 ## Current Development Status
 
 The main task management functionality is implemented, including:
@@ -341,12 +398,17 @@ The main task management functionality is implemented, including:
 - User-specific tasks
 - Task status
 - Task priority
+- Search
+- Status filtering
+- Combined search and filtering
 - Validation
 - Error handling
 - Loading and saving states
 - Delete confirmation
 - Component-based architecture
 - Firestore authorization
+- Environment-based Firebase configuration
+- TypeScript type safety
 
 The project is currently moving from the development phase toward final functionality testing, deployment, and authorized security testing.
 
@@ -354,8 +416,6 @@ The project is currently moving from the development phase toward final function
 
 Planned improvements include:
 
-- Search tasks
-- Filter tasks
 - Additional task organization features
 - Final UI and functionality testing
 - Deploy the application to Vercel
@@ -372,13 +432,13 @@ The testing process will follow a practical penetration-testing workflow:
 
 ```text
 Find
-  ↓
+ ↓
 Understand
-  ↓
+ ↓
 Test / Exploit
-  ↓
+ ↓
 Fix
-  ↓
+ ↓
 Retest
 ```
 
